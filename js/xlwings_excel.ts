@@ -8,7 +8,7 @@ async function main(workbook: ExcelScript.Workbook) {
 }
 
 /**
- * xlwings 0.26.0 (for Microsoft Office Scripts)
+ * xlwings 0.26.1 (for Microsoft Office Scripts)
  * Copyright (C) 2014 - present, Zoomer Analytics GmbH.
  * All rights reserved.
  *
@@ -69,7 +69,7 @@ async function runPython(
   let sheets = workbook.getWorksheets();
   let payload: {} = {};
   payload["client"] = "Microsoft Office Scripts";
-  payload["version"] = "0.26.0";
+  payload["version"] = "0.26.1";
   payload["book"] = {
     name: workbook.getName(),
     active_sheet_index: workbook.getActiveWorksheet().getPosition(),
