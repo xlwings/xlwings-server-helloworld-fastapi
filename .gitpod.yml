@@ -1,0 +1,36 @@
+image:
+  file: .gitpod.Dockerfile
+tasks:
+  - command: >
+      PURPLE='\e[1;35m'; NOCOLOR='\e[0m';
+      while [ -z "$XLWINGS_LICENSE_KEY" ]; do
+        SET_LICENSE_KEY=1;
+        printf "${PURPLE}Get your free trial license key at https://www.xlwings.org/trial\n${NOCOLOR}" &&
+        read -p "Enter LICENSE_KEY: "  XLWINGS_LICENSE_KEY;
+      done;
+      if [ -z "$SET_LICENSE_KEY" ]; then
+        :
+      else
+        gp env XLWINGS_LICENSE_KEY=$XLWINGS_LICENSE_KEY;
+      fi;
+      if [ -z "$XLWINGS_API_KEY" ]; then
+        gp env XLWINGS_API_KEY=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 50);
+      fi;
+      eval $(gp env -e);
+      BASE_URL=$(gp url);
+      URL=${BASE_URL/https:\/\//"https://8000-"}/hello;
+      sed -i s@'"URL"@'\""$URL"\"'@' ./js/xlwings_excel.ts;
+      sed -i s@'"URL"@'\""$URL"\"'@' ./js/xlwings_google.js;
+      sed -i s@'"API_KEY"@'\""$XLWINGS_API_KEY"\"'@' ./js/xlwings_excel.ts;
+      sed -i s@'"API_KEY"@'\""$XLWINGS_API_KEY"\"'@' ./js/xlwings_google.js;
+      printf "${PURPLE}Your API_KEY is: ${XLWINGS_API_KEY} \n${NOCOLOR}";
+      printf "${PURPLE}Your URL is: "${URL}" \n${NOCOLOR}\n";
+      python app/main.py
+vscode:
+  extensions:
+    - ms-python.python
+    - ms-toolsai.jupyter
+ports:
+  - port: 8000
+    onOpen: ignore
+    visibility: public

@@ -1,0 +1,23 @@
+{
+  "name": "xlwings-web-fastapi",
+  "description": "Use Python with Google Sheets or Excel on the web via xlwings.",
+  "repository": "https://github.com/xlwings/xlwings-web-fastapi",
+  "logo": "https://www.xlwings.org/assets/images/xlwings_logo_pos.svg",
+  "website": "https://www.xlwings.org",
+  "keywords": [
+    "Excel",
+    "Google Sheets",
+    "FastAPI",
+    "xlwings"
+  ],
+  "env": {
+    "XLWINGS_LICENSE_KEY": {
+      "description": "Head over to https://www.xlwings.org/trial to get your trial key, then paste it here.",
+      "value": ""
+    },
+    "XLWINGS_API_KEY": {
+      "description": "This is a random key. Once installation finishes, you'll find it under your app's Settings > Config Vars > Reveal Config Vars.",
+      "generator": "secret"
+    }
+  }
+}
