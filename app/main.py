@@ -1,5 +1,4 @@
 import datetime as dt
-from dateutil import tz
 
 from fastapi import Body
 import yfinance as yf
