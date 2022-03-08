@@ -9,3 +9,4 @@ RUN pyenv update \
     && pyenv global 3.10.2 \
     && python -m pip install --no-cache-dir --upgrade pip \
     && python -m pip install --no-cache-dir -r requirements.txt
+
