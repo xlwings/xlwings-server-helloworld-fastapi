@@ -14,7 +14,10 @@ def hello(data: dict = Body(...)):
 
     # Use xlwings as usual
     sheet = book.sheets[0]
-    sheet["A1"].value = "Hello xlwings!"
+    if sheet["A1"].value == "Hello xlwings!":
+        sheet["A1"].value = "Bye xlwings!"
+    else:
+        sheet["A1"].value = "Hello xlwings!"
 
     # Pass the following back as the response
     return book.json()
