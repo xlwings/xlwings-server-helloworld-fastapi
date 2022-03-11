@@ -3,4 +3,4 @@ fastapi==0.75.0
 pandas==1.4.1
 yfinance==0.1.70
 uvicorn[standard]==0.17.5
-xlwings==0.27.1
+xlwings==0.27.2
