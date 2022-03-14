@@ -61,7 +61,7 @@ def yahoo_finance(data: dict = Body(...)):
                 progress=False
             )
             target_cell.value = df
-            target_cell.columns.autofit()
+            target_cell.offset(row_offset=1).columns.autofit()
         except Exception as e:
             target_cell.value = repr(e)
 
