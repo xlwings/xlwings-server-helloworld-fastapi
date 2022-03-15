@@ -16,6 +16,7 @@ async def decode_oauth_token(
 ) -> User:
     """Decodes Google App Script's ScriptApp.getOAuthToken()
     and returns a User object if successful, otherwise raises 401
+    See: https://developers.google.com/identity/protocols/oauth2/openid-connect#obtaininguserprofileinformation
     """
     async with httpx.AsyncClient() as client:
         response = await client.get(GOOGLE_DISCOVERY_URL)
