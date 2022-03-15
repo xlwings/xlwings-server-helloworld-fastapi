@@ -1,5 +1,5 @@
 import httpx
-from fastapi import FastAPI, HTTPException, Security, status
+from fastapi import FastAPI, HTTPException, Security, status, Depends
 from fastapi.security.api_key import APIKeyHeader
 from pydantic import BaseModel
 
@@ -9,9 +9,10 @@ GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configura
 class User(BaseModel):
     id: str
     email: str
+    domain: str
 
 
-async def decode_oauth_token(
+async def authenticate(
     oauth_token: str = Security(APIKeyHeader(name="Authorization")),
 ) -> User:
     """Decodes Google App Script's ScriptApp.getOAuthToken()
@@ -26,7 +27,19 @@ async def decode_oauth_token(
         )
     if response.status_code == 200:
         userinfo = response.json()
-        return User(id=userinfo["sub"], email=userinfo["email"])
+        user = User(
+            id=userinfo["sub"], email=userinfo["email"], domain=userinfo.get("hd")
+        )
+        if True:
+            # TODO: authenticate the user here or as part of the User model
+            # E.g. to allow all users from a certain domain:
+            # if user.domain == 'mydomain.com'
+            return user
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Unauthorized",
+            )
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -34,5 +47,9 @@ async def decode_oauth_token(
         )
 
 
+async def get_current_user(user: User = Depends(authenticate)):
+    return user
+
+
 # Require authentication for every endpoint
-app = FastAPI(dependencies=[Security(decode_oauth_token)])
+app = FastAPI(dependencies=[Security(authenticate)])

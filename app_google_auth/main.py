@@ -1,11 +1,11 @@
 from fastapi import Body, Depends
 import xlwings as xw
 
-from app import app, User, decode_oauth_token
+from app import app, User, get_current_user
 
 
 @app.post("/hello")
-def hello(data: dict = Body(...), current_user: User = Depends(decode_oauth_token)):
+def hello(data: dict = Body(...), current_user: User = Depends(get_current_user)):
     # Instantiate a Book object with the deserialized request body
     book = xw.Book(json=data)
 
