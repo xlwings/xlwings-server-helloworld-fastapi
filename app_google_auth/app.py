@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, Security, status, Depends
 from fastapi.security.api_key import APIKeyHeader
 from pydantic import BaseModel
 
+# See https://developers.google.com/identity/protocols/oauth2/openid-connect#obtaininguserprofileinformation
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
 
@@ -17,7 +18,6 @@ async def authenticate(
 ) -> User:
     """Decodes Google App Script's ScriptApp.getOAuthToken()
     and returns a User object if successful, otherwise raises 401
-    See: https://developers.google.com/identity/protocols/oauth2/openid-connect#obtaininguserprofileinformation
     """
     async with httpx.AsyncClient() as client:
         response = await client.get(GOOGLE_DISCOVERY_URL)
