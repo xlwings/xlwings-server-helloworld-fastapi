@@ -16,7 +16,7 @@ class User(BaseModel):
 async def authenticate(
     oauth_token: str = Security(APIKeyHeader(name="Authorization")),
 ) -> User:
-    """Decodes Google App Script's ScriptApp.getOAuthToken()
+    """Decodes Google Apps Script's ScriptApp.getOAuthToken()
     and returns a User object if successful, otherwise raises 401
     """
     async with httpx.AsyncClient() as client:
