@@ -47,7 +47,7 @@ async def authenticate(
         )
 
 
-async def get_current_user(user: User = Depends(authenticate)):
+async def get_current_user(user: User = Depends(authenticate)) -> User:
     return user
 
 
