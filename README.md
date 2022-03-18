@@ -1,6 +1,18 @@
-# xlwings Sample Project for Google Sheets or Excel on the web
+# xlwings Sample Project for the Remote Interpreter
 
-Please read the docs: https://docs.xlwings.org/en/stable/remote_interpreter.html#cloud-based-development-with-gitpod
+Please read the docs: https://docs.xlwings.org/en/stable/remote_interpreter.html
+
+This sample works with:
+
+* Excel on Windows
+* Excel on macOS
+* Excel on the web
+* Google Sheets
+
+There are the following samples:
+
+* `app`: A simple hello world sample and a sample using yfinance to fetch stock history data as a pandas DataFrame
+* `app_google_auth`: This sample shows how you can identify users on the backend by sending over `ScriptApp.getOAuthToken()` as the `apiToken`
 
 * To open this repo with Gitpod for easy **development**, click the button:  
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/xlwings/xlwings-web-fastapi)
