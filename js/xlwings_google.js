@@ -3,7 +3,7 @@ function hello() {
 }
 
 /**
- * xlwings 0.27.2 (for Google Apps Script)
+ * xlwings 0.27.3 (for Google Apps Script)
  * Copyright (C) 2014 - present, Zoomer Analytics GmbH.
  * All rights reserved.
  *
@@ -78,7 +78,7 @@ function runPython(url, { apiKey = "", exclude = "", headers = {} } = {}) {
   let sheets = workbook.getSheets();
   let payload = {};
   payload["client"] = "Google Apps Script";
-  payload["version"] = "0.27.2";
+  payload["version"] = "0.27.3";
   payload["book"] = {
     name: workbook.getName(),
     active_sheet_index: workbook.getActiveSheet().getIndex() - 1,
@@ -183,11 +183,12 @@ function setValues(workbook, action) {
   // Handle DateTime (TODO: backend should deliver indices with datetime obj)
   let dt;
   let dtString;
+  let locale = workbook.getSpreadsheetLocale().replace("_", "-");
   action.values.forEach((valueRow, rowIndex) => {
     valueRow.forEach((value, colIndex) => {
       if (typeof value === "string") {
         dt = new Date(Date.parse(value));
-        dtString = dt.toLocaleDateString();
+        dtString = dt.toLocaleDateString(locale);
         if (dtString !== "Invalid Date") {
           if (
             dt.getHours() +
