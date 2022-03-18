@@ -14,6 +14,8 @@ There are the following samples:
 * `app`: A simple hello world sample and a sample using yfinance to fetch stock history data as a pandas DataFrame
 * `app_google_auth`: This sample shows how you can identify users on the backend by sending over `ScriptApp.getOAuthToken()` as the `apiToken`
 
+Quickstart:
+
 * To open this repo with Gitpod for easy **development**, click the button:  
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/xlwings/xlwings-web-fastapi)
 
