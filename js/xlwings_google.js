@@ -3,7 +3,7 @@ function hello() {
 }
 
 /**
- * xlwings 0.27.3 (for Google Apps Script)
+ * xlwings 0.27.4 (for Google Apps Script)
  * Copyright (C) 2014 - present, Zoomer Analytics GmbH.
  * All rights reserved.
  *
@@ -37,8 +37,15 @@ function hello() {
  * @OnlyCurrentDoc
  */
 
-function runPython(url, { apiKey = "", exclude = "", headers = {} } = {}) {
+function runPython(
+  url,
+  { apiKey = "", include = "", exclude = "", headers = {} } = {}
+) {
   const workbook = SpreadsheetApp.getActive();
+  const sheets = workbook.getSheets();
+
+  // Only used to request permission for proper OAuth Scope
+  Session.getActiveUser().getEmail();
 
   // Config
   let configSheet = workbook.getSheetByName("xlwings.conf");
@@ -57,11 +64,31 @@ function runPython(url, { apiKey = "", exclude = "", headers = {} } = {}) {
     apiKey = config["API_KEY"] || "";
   }
 
+  if (include === "") {
+    include = config["INCLUDE"] || "";
+  }
+  let includeArray = [];
+  if (include !== "") {
+    includeArray = include.split(",").map((item) => item.trim());
+  }
+
   if (exclude === "") {
     exclude = config["EXCLUDE"] || "";
   }
   let excludeArray = [];
-  excludeArray = exclude.split(",").map((item) => item.trim());
+  if (exclude !== "") {
+    excludeArray = exclude.split(",").map((item) => item.trim());
+  }
+  if (includeArray.length > 0 && excludeArray.length > 0) {
+    throw "Either use 'include' or 'exclude', but not both!";
+  }
+  if (includeArray.length > 0) {
+    sheets.forEach((sheet) => {
+      if (!includeArray.includes(sheet.getName())) {
+        excludeArray.push(sheet.getName());
+      }
+    });
+  }
 
   if (Object.keys(headers).length === 0) {
     for (const property in config) {
@@ -75,10 +102,9 @@ function runPython(url, { apiKey = "", exclude = "", headers = {} } = {}) {
   }
 
   // Request payload
-  let sheets = workbook.getSheets();
   let payload = {};
   payload["client"] = "Google Apps Script";
-  payload["version"] = "0.27.3";
+  payload["version"] = "0.27.4";
   payload["book"] = {
     name: workbook.getName(),
     active_sheet_index: workbook.getActiveSheet().getIndex() - 1,
@@ -176,6 +202,7 @@ let funcs = {
   setAutofit: setAutofit,
   setRangeColor: setRangeColor,
   activateSheet: activateSheet,
+  addHyperlink: addHyperlink,
 };
 
 // Functions
@@ -245,4 +272,12 @@ function setRangeColor(workbook, action) {
 
 function activateSheet(workbook, action) {
   workbook.getSheets()[parseInt(action.args[0])].activate();
+}
+
+function addHyperlink(workbook, action) {
+  let value = SpreadsheetApp.newRichTextValue()
+    .setText(action.args[1])
+    .setLinkUrl(action.args[0])
+    .build();
+  getRange(workbook, action).setRichTextValue(value);
 }
