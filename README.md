@@ -21,7 +21,7 @@ Quickstart:
 
 * If you want to commit changes, fork this repo first and prepend `https://gitpod.io/#` in front of the GitHub URL instead of clicking the button
 
-* For a quick **production** deployment, you can deploy to Render or Heroku by cliking the respective button. For more details and other options, see [the docs](https://docs.xlwings.org/en/web/remote_interpreter.html#production-deployment).  
+* For a quick **production** deployment, you can deploy to Render or Heroku by clicking the respective button. For more details and other options, see [the docs](https://docs.xlwings.org/en/web/remote_interpreter.html#production-deployment).  
 
   [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
