@@ -1,20 +1,15 @@
 services:
   - type: web
-    name: xlwings-remote-fastapi2
+    name: xlwings-remote-fastapi
     env: python
     region: ohio
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn main:app --chdir app --bind 0.0.0.0:8000 --access-logfile - --workers 2 --worker-class uvicorn.workers.UvicornWorker
-    # healthCheckPath: /
-    disk:
-      name: xlwings-data
-      mountPath: /mnt/xlwings
-      sizeGB: 1
     envVars:
       - key: XLWINGS_API_KEY
         generateValue: true
-      - key: XLWINGS_LICENSE_KEY
-        sync: false
       - key: PYTHON_VERSION
         value: 3.10.3
+      - key: XLWINGS_LICENSE_KEY
+
