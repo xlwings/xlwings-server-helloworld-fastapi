@@ -12,4 +12,4 @@ services:
       - key: PYTHON_VERSION
         value: 3.10.3
       - key: XLWINGS_LICENSE_KEY
-
+        sync: false
