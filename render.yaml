@@ -16,3 +16,5 @@ services:
         generateValue: true
       - key: XLWINGS_LICENSE_KEY
         sync: false
+      - key: PYTHON_VERSION
+        value: 3.10.3
