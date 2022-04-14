@@ -3,7 +3,7 @@ function hello() {
 }
 
 /**
- * xlwings 0.27.4 (for Google Apps Script)
+ * xlwings 0.27.6 (for Google Apps Script)
  * Copyright (C) 2014 - present, Zoomer Analytics GmbH.
  * All rights reserved.
  *
@@ -104,7 +104,7 @@ function runPython(
   // Request payload
   let payload = {};
   payload["client"] = "Google Apps Script";
-  payload["version"] = "0.27.4";
+  payload["version"] = "0.27.6";
   payload["book"] = {
     name: workbook.getName(),
     active_sheet_index: workbook.getActiveSheet().getIndex() - 1,
@@ -159,11 +159,14 @@ function runPython(
     contentType: "application/json",
     payload: JSON.stringify(payload),
     headers: headers,
+    muteHttpExceptions: true,
   };
 
   // Parse JSON response
-  // TODO: handle non-200 status more gracefully
   const response = UrlFetchApp.fetch(url, options);
+  if (response.getResponseCode() !== 200) {
+    throw response.getContentText();
+  }
   const json = response.getContentText();
   const rawData = JSON.parse(json);
 
@@ -203,6 +206,7 @@ let funcs = {
   setRangeColor: setRangeColor,
   activateSheet: activateSheet,
   addHyperlink: addHyperlink,
+  setNumberFormat: setNumberFormat,
 };
 
 // Functions
@@ -213,7 +217,11 @@ function setValues(workbook, action) {
   let locale = workbook.getSpreadsheetLocale().replace("_", "-");
   action.values.forEach((valueRow, rowIndex) => {
     valueRow.forEach((value, colIndex) => {
-      if (typeof value === "string") {
+      if (
+        typeof value === "string" &&
+        value.length > 18 &&
+        value.includes("T")
+      ) {
         dt = new Date(Date.parse(value));
         dtString = dt.toLocaleDateString(locale);
         if (dtString !== "Invalid Date") {
@@ -280,4 +288,8 @@ function addHyperlink(workbook, action) {
     .setLinkUrl(action.args[0])
     .build();
   getRange(workbook, action).setRichTextValue(value);
+}
+
+function setNumberFormat(workbook, action) {
+  getRange(workbook, action).setNumberFormat(action.args[0]);
 }

@@ -3,7 +3,7 @@ async function main(workbook: ExcelScript.Workbook) {
 }
 
 /**
- * xlwings 0.27.4 (for Microsoft Office Scripts)
+ * xlwings 0.27.6 (for Microsoft Office Scripts)
  * Copyright (C) 2014 - present, Zoomer Analytics GmbH.
  * All rights reserved.
  *
@@ -98,7 +98,7 @@ async function runPython(
   // Request payload
   let payload: {} = {};
   payload["client"] = "Microsoft Office Scripts";
-  payload["version"] = "0.27.4";
+  payload["version"] = "0.27.6";
   payload["book"] = {
     name: workbook.getName(),
     active_sheet_index: workbook.getActiveWorksheet().getPosition(),
@@ -166,7 +166,7 @@ async function runPython(
   // Parse JSON response
   let rawData: { actions: Action[] };
   if (response.status !== 200) {
-    throw `Server responded with error ${response.status}`;
+    throw await response.text();
   } else {
     rawData = await response.json();
   }
@@ -225,6 +225,7 @@ let funcs = {
   setRangeColor: setRangeColor,
   activateSheet: activateSheet,
   addHyperlink: addHyperlink,
+  setNumberFormat: setNumberFormat,
 };
 
 // Functions
@@ -234,7 +235,11 @@ function setValues(workbook: ExcelScript.Workbook, action: Action) {
   let dtString: string;
   action.values.forEach((valueRow, rowIndex) => {
     valueRow.forEach((value: string | number | boolean, colIndex) => {
-      if (typeof value === "string") {
+      if (
+        typeof value === "string" &&
+        value.length > 18 &&
+        value.includes("T")
+      ) {
         dt = new Date(Date.parse(value));
         dtString = dt.toLocaleDateString();
         if (dtString !== "Invalid Date") {
@@ -295,4 +300,8 @@ function addHyperlink(workbook: ExcelScript.Workbook, action: Action) {
     textToDisplay: action.args[1].toString(),
     screenTip: action.args[2].toString(),
   });
+}
+
+function setNumberFormat(workbook: ExcelScript.Workbook, action: Action) {
+  getRange(workbook, action).setNumberFormat(action.args[0].toString());
 }
