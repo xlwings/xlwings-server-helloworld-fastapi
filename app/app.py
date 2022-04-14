@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security.api_key import APIKeyHeader
 
 
-async def validate_api_key(api_key: str = Security(APIKeyHeader(name="Authorization"))):
+async def authenticate(api_key: str = Security(APIKeyHeader(name="Authorization"))):
     """Validate the API_KEY as delivered by the Authorization header
     It is recommended to always set a unique XLWINGS_API_KEY as environment variable.
     Without an env var, it expects "DEVELOPMENT" as the API_KEY, which is insecure.
@@ -18,10 +18,10 @@ async def validate_api_key(api_key: str = Security(APIKeyHeader(name="Authorizat
 
 
 # Require the API_KEY for every endpoint
-app = FastAPI(dependencies=[Security(validate_api_key)])
+app = FastAPI(dependencies=[Security(authenticate)])
 
-# Excel on the web and our Python backend are on different origins,
-# so we'll need to enable CORS (Google Sheets doesn't doesn't use CORS and will ingore this)
+# Excel on the web and our Python backend are on different origins, so enable CORS.
+# Google Sheets doesn't use CORS and will ingore this.
 app.add_middleware(
     CORSMiddleware,
     allow_origin_regex=r"https://.*.officescripts.microsoftusercontent.com",
