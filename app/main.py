@@ -1,14 +1,14 @@
 import datetime as dt
 
-from fastapi import Body
-import yfinance as yf
 import xlwings as xw
+import yfinance as yf
+from fastapi import Body
 
 from app import app
 
 
 @app.post("/hello")
-def hello(data: dict = Body(...)):
+def hello(data: dict = Body):
     # Instantiate a Book object with the deserialized request body
     book = xw.Book(json=data)
 
@@ -24,7 +24,7 @@ def hello(data: dict = Body(...)):
 
 
 @app.post("/yahoo")
-def yahoo_finance(data: dict = Body(...)):
+def yahoo_finance(data: dict = Body):
     """
     This is a sample function using the yfinance package to query
     Yahoo! Finance. It writes a pandas DataFrame to Excel/Google Sheets.

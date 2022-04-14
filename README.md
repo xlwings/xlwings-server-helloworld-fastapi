@@ -9,10 +9,8 @@ This sample works with:
 * Excel on the web
 * Google Sheets
 
-There are the following samples:
-
-* `app`: A simple hello world sample and a sample using yfinance to fetch stock history data as a pandas DataFrame
-* `app_google_auth`: This sample shows how you can identify users on the backend by sending over `ScriptApp.getOAuthToken()` as the `apiToken`
+For a Google Sheet-specific app, demonstrating authentication/authorization:
+https://github.com/xlwings/xlwings-googlesheets-fastapi
 
 Quickstart:
 
