@@ -15,7 +15,7 @@ https://github.com/xlwings/xlwings-googlesheets-fastapi
 Quickstart:
 
 * To open this repo with Gitpod for easy **development**, click the button:  
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/xlwings/xlwings-web-fastapi)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/xlwings/xlwings-remote-fastapi)
 
 * If you want to commit changes, fork this repo first and prepend `https://gitpod.io/#` in front of the GitHub URL instead of clicking the button
 
