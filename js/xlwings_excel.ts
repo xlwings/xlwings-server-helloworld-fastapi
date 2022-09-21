@@ -1,5 +1,5 @@
 async function main(workbook: ExcelScript.Workbook) {
-  await runPython(workbook, "url", { apiKey: "API_KEY" });
+  await runPython(workbook, "https://8000-xlwings-xlwingsremotefa-hl1j9aolbdw.ws-us65.gitpod.io/hello", { apiKey: "ejqe2r07DaXzhd8jVcUlVIPq5Da6BttogbXwdfBjkzZhmrDjWS"});
 }
 
 /**
