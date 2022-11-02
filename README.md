@@ -26,7 +26,7 @@ To learn about how to call your script from a button with Google Sheets or Excel
 ## Next Steps:
 
 * **Authentication**:  
-https://github.com/xlwings/xlwings-googlesheets-auth
+https://github.com/xlwings/xlwings-server-auth
 
 * **Docs**:  
 https://docs.xlwings.org/en/stable/remote_interpreter.html
