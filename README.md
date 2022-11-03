@@ -12,7 +12,7 @@ This sample works with:
 ### Development Server
 
 * Open this repo in GitPod:    
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/xlwings/xlwings-remote-fastapi/tree/simplify)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/xlwings/xlwings-server-helloworld/tree/simplify)
 * When you open it the very first time, it will ask you to enter an xlwings (trial) license key. You can get one from here: https://www.xlwings.org/trial
 
 ### Client
