@@ -17,9 +17,9 @@ This sample works with:
 
 ### Client
 
-* **Desktop Excel**: Open the VBA editor via `Ctrl-F11` (Windows) or `Cmd-F11` (macOS) and replace the URL in `RunRemotePython` with the URL that GitPod prints. If your version of Excel has an automate tab, you can alternatively follow the instruction for Excel on the web below.
+* **Desktop Excel (via VBA)**: Open the VBA editor via `Ctrl-F11` (Windows) or `Cmd-F11` (macOS) and replace the URL and `auth` argument in `RunRemotePython` with the respective values that GitPod prints.
+* **Excel (via Office Scripts)**: In the `Automate` tab, click on `New Script`. Replace the content of the script with the content of `js/xlwings_excel.ts`. `Save` the script, then click on `Run`.
 * **Google Sheets**: Click on `Extensions` > `Apps Scripts`. Replace the code in the file `Code.gs` with the code in `js/xlwings_google.js`. Then hit the `Run` button. If you run this the very first time, Google Sheets will ask you for the permissions it needs.
-* **Excel on the web**: In the `Automate` tab, click on `New Script`. Replace the content of the script with the content of `js/xlwings_excel.ts`. `Save` the script, then click on `Run`.
 
 To learn about how to call your script from a button with Google Sheets or Excel on the web, have a look at the docs (link below).
 

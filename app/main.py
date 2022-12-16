@@ -1,8 +1,23 @@
-import xlwings as xw
-from fastapi import Body, FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+import os
+import secrets
 
-app = FastAPI()
+import xlwings as xw
+from fastapi import Body, FastAPI, HTTPException, Security, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security.api_key import APIKeyHeader
+
+
+async def authenticate(api_key: str = Security(APIKeyHeader(name="Authorization"))):
+    """Validate the Authorization header"""
+    if not secrets.compare_digest(api_key, os.environ["APP_API_KEY"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API Key",
+        )
+
+
+# Require the API_KEY for every endpoint
+app = FastAPI(dependencies=[Security(authenticate)])
 
 
 @app.post("/hello")
@@ -22,7 +37,7 @@ def hello(data: dict = Body):
     return book.json()
 
 
-# Excel on the web: requires CORS
+# Excel via Office Scripts requires CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origin_regex=r"https://.*.officescripts.microsoftusercontent.com",
