@@ -19,9 +19,9 @@ tasks:
       URL=${BASE_URL/https:\/\//"https://8000-"}/hello;
       sed -i s@'"url"@'\""$URL"\"'@' ./js/xlwings_excel.ts;
       sed -i s@'"url"@'\""$URL"\"'@' ./js/xlwings_google.js;
-      sed -i s@'"..."@'\""$API_KEY"\"'@' ./js/xlwings_excel.ts;
-      sed -i s@'"..."@'\""$API_KEY"\"'@' ./js/xlwings_google.js;
-      printf "${PURPLE}Your URL is: "${URL}" \n${NOCOLOR}\n";
+      sed -i s@'"..."@'\""$APP_API_KEY"\"'@' ./js/xlwings_excel.ts;
+      sed -i s@'"..."@'\""$APP_API_KEY"\"'@' ./js/xlwings_google.js;
+      printf "${PURPLE}Your URL is: "${URL}" \n${NOCOLOR}";
       printf "${PURPLE}Your API_KEY is: "${APP_API_KEY}" \n${NOCOLOR}\n";
       python app/main.py
 vscode:
