@@ -25,11 +25,11 @@ To learn about how to call your script from a button with Google Sheets or Excel
 
 ## Next Steps:
 
-* **Authentication**:  
-https://github.com/xlwings/xlwings-server-auth
-
 * **Docs**:  
 https://docs.xlwings.org/en/stable/remote_interpreter.html
+
+* **Authentication**:  
+https://docs.xlwings.org/en/stable/server_authentication.html
 
 * **Docker**:  
   A Docker image can be built for local development or can serve as a basis for production deployment:
@@ -43,5 +43,5 @@ https://docs.xlwings.org/en/stable/remote_interpreter.html
   Then run the server locally like this:
 
   ```
-  docker run --rm -p 8000:8000 -e XLWINGS_LICENSE_KEY=your-license-key xlwings
+  docker run --rm -p 8000:8000 -e XLWINGS_LICENSE_KEY=your-license-key -e APP_API_KEY=a_random_key xlwings
   ```
