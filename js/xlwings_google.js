@@ -1,5 +1,5 @@
 function hello() {
-  runPython("url", { auth: "..." });
+  runPython("url", { auth: "DEVELOPMENT" });
 }
 
 /**
@@ -41,7 +41,7 @@ function runPython(
   url,
   { auth = "", apiKey = "", include = "", exclude = "", headers = {} } = {}
 ) {
-  const version = "0.28.6";
+  const version = "0.30.1";
   const workbook = SpreadsheetApp.getActive();
   const sheets = workbook.getSheets();
 
@@ -156,9 +156,11 @@ function runPython(
           if (value instanceof Date) {
             // Convert from script timezone to spreadsheet timezone
             let tzDate = new Date(
-              value.toLocaleString("en-US", {
-                timeZone: workbook.getSpreadsheetTimeZone(),
-              })
+              value
+                .toLocaleString("en-US", {
+                  timeZone: workbook.getSpreadsheetTimeZone(),
+                })
+                .replace(/\u202F/, " ") // https://bugs.chromium.org/p/v8/issues/detail?id=13494
             );
             // toISOString transforms to UTC, so we need to correct for offset
             values[rowIndex][colIndex] = new Date(
@@ -170,13 +172,17 @@ function runPython(
     }
 
     let pictures = [];
-    sheet.getImages().forEach((image, ix) => {
-      pictures[ix] = {
-        name: image.getAltTextTitle(),
-        height: image.getHeight(),
-        width: image.getWidth(),
-      };
-    });
+    if (excludeArray.includes(sheet.getName())) {
+      pictures = [];
+    } else {
+      sheet.getImages().forEach((image, ix) => {
+        pictures[ix] = {
+          name: image.getAltTextTitle(),
+          height: image.getHeight(),
+          width: image.getWidth(),
+        };
+      });
+    }
 
     payload["sheets"].push({
       name: sheet.getName(),
@@ -249,14 +255,14 @@ function setValues(workbook, action) {
         dt = new Date(Date.parse(value));
         dtString = dt.toLocaleDateString(locale);
         if (dtString !== "Invalid Date") {
-          if (
-            dt.getHours() +
-              dt.getMinutes() +
-              dt.getSeconds() +
-              dt.getMilliseconds() !==
-            0
-          ) {
-            dtString += " " + dt.toLocaleTimeString();
+          let hours = dt.getHours();
+          let minutes = dt.getMinutes();
+          let seconds = dt.getSeconds();
+          let milliseconds = dt.getMilliseconds();
+          if (hours + minutes + seconds + milliseconds !== 0) {
+            // The time doesn't follow the locale in the Date Time combination!
+            dtString +=
+              " " + hours + ":" + minutes + ":" + seconds + "." + milliseconds;
           }
           action.values[rowIndex][colIndex] = dtString;
         }
@@ -271,7 +277,8 @@ function clearContents(workbook, action) {
 }
 
 function addSheet(workbook, action) {
-  let sheet = workbook.insertSheet(action.args[0]);
+  // insertSheet(sheetName, sheetIndex)
+  let sheet = workbook.insertSheet(action.args[1], parseInt(action.args[0]));
 }
 
 function setSheetName(workbook, action) {
@@ -430,5 +437,29 @@ function alert(workbook, action) {
 
   if (myCallback != "") {
     funcs[myCallback](buttonResult);
+  }
+}
+
+function setRangeName(workbook, action) {
+  throw "NotImplemented: setRangeName";
+}
+
+function namesAdd(workbook, action) {
+  throw "NotImplemented: namesAdd";
+}
+
+function nameDelete(workbook, action) {
+  throw "NotImplemented: deleteName";
+}
+
+function runMacro(workbook, action) {
+  funcs[action.args[0]](workbook, ...action.args.slice(1));
+}
+
+function rangeDelete(workbook, action) {
+  if (action.args[0] === "up") {
+    getRange(workbook, action).deleteCells(SpreadsheetApp.Dimension.ROWS);
+  } else {
+    getRange(workbook, action).deleteCells(SpreadsheetApp.Dimension.COLUMNS);
   }
 }

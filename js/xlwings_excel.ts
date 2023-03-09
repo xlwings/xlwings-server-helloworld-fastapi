@@ -1,5 +1,5 @@
 async function main(workbook: ExcelScript.Workbook) {
-  await runPython(workbook, "url", { auth: "..." });
+  await runPython(workbook, "url", { auth: "DEVELOPMENT" });
 }
 
 /**
@@ -33,6 +33,7 @@ async function main(workbook: ExcelScript.Workbook) {
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+globalThis.callbacks = {};
 async function runPython(
   workbook: ExcelScript.Workbook,
   url = "",
@@ -44,7 +45,7 @@ async function runPython(
     headers = {},
   }: Options = {}
 ): Promise<void> {
-  const version = "0.28.6";
+  const version = "0.30.1";
   const sheets = workbook.getWorksheets();
   // Config
   let configSheet = workbook.getWorksheet("xlwings.conf");
@@ -119,11 +120,11 @@ async function runPython(
     selection: workbook.getSelectedRange().getAddress().split("!").pop(),
   };
 
-  // Names
+  // Names (book scope only)
   let names: Names[] = [];
   workbook.getNames().forEach((namedItem, ix) => {
     // Currently filtering to named ranges
-    // Sheet scope names don't seem to come through despite the existence of getScope()
+    // TODO: add sheet scoped named ranges via sheets as in officejs
     let itemType: ExcelScript.NamedItemType = namedItem.getType();
     if (itemType === ExcelScript.NamedItemType.range) {
       names[ix] = {
@@ -214,7 +215,7 @@ async function runPython(
       if (forceSync.some((el) => action.func.toLowerCase().includes(el))) {
         console.log(); // Force sync to prevent writing to wrong sheet
       }
-      funcs[action.func](workbook, action);
+      globalThis.callbacks[action.func](workbook, action);
     });
   }
 }
@@ -257,27 +258,11 @@ function getRange(workbook: ExcelScript.Workbook, action: Action) {
     );
 }
 
-// Functions map
-let funcs = {
-  setValues: setValues,
-  clearContents: clearContents,
-  addSheet: addSheet,
-  setSheetName: setSheetName,
-  setAutofit: setAutofit,
-  setRangeColor: setRangeColor,
-  activateSheet: activateSheet,
-  addHyperlink: addHyperlink,
-  setNumberFormat: setNumberFormat,
-  setPictureName: setPictureName,
-  setPictureWidth: setPictureWidth,
-  setPictureHeight: setPictureHeight,
-  deletePicture: deletePicture,
-  addPicture: addPicture,
-  updatePicture: updatePicture,
-  alert: alert,
-};
+function registerCallback(callback: Function) {
+  globalThis.callbacks[callback.name] = callback;
+}
 
-// Functions
+// Callbacks
 function setValues(workbook: ExcelScript.Workbook, action: Action) {
   // Handle DateTime (TODO: backend should deliver indices with datetime obj)
   let dt: Date;
@@ -308,21 +293,30 @@ function setValues(workbook: ExcelScript.Workbook, action: Action) {
   });
   getRange(workbook, action).setValues(action.values);
 }
+registerCallback(setValues);
 
 function clearContents(workbook: ExcelScript.Workbook, action: Action) {
   getRange(workbook, action).clear(ExcelScript.ClearApplyTo.contents);
 }
+registerCallback(clearContents);
 
 function addSheet(workbook: ExcelScript.Workbook, action: Action) {
-  let sheet = workbook.addWorksheet();
+  let sheet: ExcelScript.Worksheet;
+  if (action.args[1] !== null) {
+    sheet = workbook.addWorksheet(action.args[1].toString());
+  } else {
+    sheet = workbook.addWorksheet();
+  }
   sheet.setPosition(parseInt(action.args[0].toString()));
 }
+registerCallback(addSheet);
 
 function setSheetName(workbook: ExcelScript.Workbook, action: Action) {
   workbook
     .getWorksheets()
     [action.sheet_position].setName(action.args[0].toString());
 }
+registerCallback(setSheetName);
 
 function setAutofit(workbook: ExcelScript.Workbook, action: Action) {
   if (action.args[0] === "columns") {
@@ -331,6 +325,7 @@ function setAutofit(workbook: ExcelScript.Workbook, action: Action) {
     getRange(workbook, action).getFormat().autofitRows();
   }
 }
+registerCallback(setAutofit);
 
 function setRangeColor(workbook: ExcelScript.Workbook, action: Action) {
   getRange(workbook, action)
@@ -338,10 +333,12 @@ function setRangeColor(workbook: ExcelScript.Workbook, action: Action) {
     .getFill()
     .setColor(action.args[0].toString());
 }
+registerCallback(setRangeColor);
 
 function activateSheet(workbook: ExcelScript.Workbook, action: Action) {
   workbook.getWorksheets()[parseInt(action.args[0].toString())].activate();
 }
+registerCallback(activateSheet);
 
 function addHyperlink(workbook: ExcelScript.Workbook, action: Action) {
   getRange(workbook, action).setHyperlink({
@@ -350,34 +347,42 @@ function addHyperlink(workbook: ExcelScript.Workbook, action: Action) {
     screenTip: action.args[2].toString(),
   });
 }
+registerCallback(addHyperlink);
 
 function setNumberFormat(workbook: ExcelScript.Workbook, action: Action) {
   getRange(workbook, action).setNumberFormat(action.args[0].toString());
 }
+registerCallback(setNumberFormat);
 
 function setPictureName(workbook: ExcelScript.Workbook, action: Action) {
   throw "Not Implemented: setPictureName";
 }
+registerCallback(setPictureName);
 
 function setPictureHeight(workbook: ExcelScript.Workbook, action: Action) {
   throw "Not Implemented: setPictureHeight";
 }
+registerCallback(setPictureHeight);
 
 function setPictureWidth(workbook: ExcelScript.Workbook, action: Action) {
   throw "Not Implemented: setPictureWidth";
 }
+registerCallback(setPictureWidth);
 
 function deletePicture(workbook: ExcelScript.Workbook, action: Action) {
   throw "Not Implemented: deletePicture";
 }
+registerCallback(deletePicture);
 
 function addPicture(workbook: ExcelScript.Workbook, action: Action) {
   throw "Not Implemented: addPicture";
 }
+registerCallback(addPicture);
 
 function updatePicture(workbook: ExcelScript.Workbook, action: Action) {
   throw "Not Implemented: updatePicture";
 }
+registerCallback(updatePicture);
 
 function alert(workbook: ExcelScript.Workbook, action: Action) {
   // OfficeScripts doesn't have an any alert outside of DataValidation...
@@ -388,3 +393,37 @@ function alert(workbook: ExcelScript.Workbook, action: Action) {
   let myCallback = action.args[4]; // ignored
   throw myPrompt;
 }
+registerCallback(alert);
+
+function setRangeName(workbook: ExcelScript.Workbook, action: Action) {
+  throw "NotImplemented: setRangeName";
+}
+registerCallback(setRangeName);
+
+function namesAdd(workbook: ExcelScript.Workbook, action: Action) {
+  throw "NotImplemented: namesAdd";
+}
+registerCallback(namesAdd);
+
+function nameDelete(workbook: ExcelScript.Workbook, action: Action) {
+  throw "NotImplemented: deleteName";
+}
+registerCallback(nameDelete);
+
+function runMacro(workbook: ExcelScript.Workbook, action: Action) {
+  globalThis.callbacks[action.args[0].toString()](
+    workbook,
+    ...action.args.slice(1)
+  );
+}
+registerCallback(runMacro);
+
+function rangeDelete(workbook: ExcelScript.Workbook, action: Action) {
+  let shift = action.args[0].toString();
+  if (shift === "up") {
+    getRange(workbook, action).delete(ExcelScript.DeleteShiftDirection.up);
+  } else if (shift === "left") {
+    getRange(workbook, action).delete(ExcelScript.DeleteShiftDirection.left);
+  }
+}
+registerCallback(rangeDelete);

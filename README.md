@@ -17,19 +17,20 @@ This sample works with:
 
 ### Client
 
-* **Desktop Excel (via VBA)**: Open the VBA editor via `Ctrl-F11` (Windows) or `Cmd-F11` (macOS) and replace the URL and `auth` argument in `RunRemotePython` with the respective values that GitPod prints.
+* **Excel (via VBA)**: Open the VBA editor via `Ctrl-F11` (Windows) or `Cmd-F11` (macOS) and replace the URL and `auth` argument in `RunRemotePython` with the respective values that GitPod prints.
 * **Excel (via Office Scripts)**: In the `Automate` tab, click on `New Script`. Replace the content of the script with the content of `js/xlwings_excel.ts`. `Save` the script, then click on `Run`.
-* **Google Sheets**: Click on `Extensions` > `Apps Scripts`. Replace the code in the file `Code.gs` with the code in `js/xlwings_google.js`. Then hit the `Run` button. If you run this the very first time, Google Sheets will ask you for the permissions it needs.
+* **Excel (via Office.js Add-ins)** For Office.js add-ins, please use this repo instead: https://github.com/xlwings/xlwings-officejs-quickstart
+* **Google Sheets (via Google Apps Script)**: Click on `Extensions` > `Apps Scripts`. Replace the code in the file `Code.gs` with the code in `js/xlwings_google.js`. Then hit the `Run` button. If you run this the very first time, Google Sheets will ask you for the permissions it needs.
 
 To learn about how to call your script from a button with Google Sheets or Excel on the web, have a look at the docs (link below).
 
 ## Next Steps:
 
 * **Docs**:  
-https://docs.xlwings.org/en/stable/remote_interpreter.html
+https://docs.xlwings.org/en/stable/pro/server/server.html
 
 * **Authentication**:  
-https://docs.xlwings.org/en/stable/server_authentication.html
+https://docs.xlwings.org/en/stable/pro/server/server_authentication.html
 
 * **Docker**:  
   A Docker image can be built for local development or can serve as a basis for production deployment:
@@ -43,5 +44,5 @@ https://docs.xlwings.org/en/stable/server_authentication.html
   Then run the server locally like this:
 
   ```
-  docker run --rm -p 8000:8000 -e XLWINGS_LICENSE_KEY=your-license-key -e APP_API_KEY=a_random_key xlwings
+  docker run --rm -p 8000:8000 -e XLWINGS_LICENSE_KEY=your-license-key xlwings
   ```
