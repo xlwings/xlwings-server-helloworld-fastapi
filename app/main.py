@@ -1,12 +1,7 @@
-import os
-import secrets
-
 import xlwings as xw
-from fastapi import Body, FastAPI, HTTPException, Security, status
+from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security.api_key import APIKeyHeader
 
-# Require the API_KEY for every endpoint
 app = FastAPI()
 
 
@@ -30,7 +25,7 @@ def hello(data: dict = Body):
 # Excel on the web requires CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"https://.*.officescripts.microsoftusercontent.com",
+    allow_origins="*",
     allow_methods=["POST"],
     allow_headers=["*"],
 )
