@@ -5,6 +5,12 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 
+@app.get("/")
+def root():
+    # Can be used for a health check
+    return {"status": "ok"}
+
+
 @app.post("/hello")
 def hello(data: dict = Body):
     # Instantiate a Book object with the deserialized request body
