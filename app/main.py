@@ -1,13 +1,14 @@
 import xlwings as xw
-from fastapi import Body, FastAPI
+from fastapi import Body, FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 app = FastAPI()
 
 
 @app.get("/")
 def root():
-    # Can be used for a health check
+    # Health check
     return {"status": "ok"}
 
 
@@ -28,16 +29,24 @@ def hello(data: dict = Body):
     return book.json()
 
 
-# Excel on the web requires CORS
-app.add_middleware(
-    CORSMiddleware,
+@app.exception_handler(Exception)
+async def exception_handler(request, exception):
+    # This handles all exceptions, so you may want to make this more restrictive
+    return PlainTextResponse(
+        str(exception), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
+
+
+# Office Scripts and custom functions in Excel on the web require CORS
+cors_app = CORSMiddleware(
+    app=app,
     allow_origins="*",
     allow_methods=["POST"],
     allow_headers=["*"],
+    allow_credentials=True,
 )
-
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:cors_app", host="127.0.0.1", port=8000, reload=True)
