@@ -13,7 +13,7 @@ COPY ./app /app
 EXPOSE 8000
 
 # This is for single-container deployments (multiple-workers)
-CMD ["gunicorn", "app.main:app", \
+CMD ["gunicorn", "app.cors_app:app", \
      "--bind", "0.0.0.0:8000", \
      "--access-logfile", "-", \
      "--workers", "2", \
