@@ -24,7 +24,7 @@ Book = Annotated[xw.Book, Depends(get_book)]
 @app.post("/hello")
 async def hello(book: Book):
     """If you're using FastAPI < 0.95.0, you have to replace the function signature
-    like so: `async def hello(book: xw.Book = Depends(get_book))`
+    like so: async def hello(book: xw.Book = Depends(get_book))
     """
     sheet = book.sheets[0]
     cell = sheet["A1"]
