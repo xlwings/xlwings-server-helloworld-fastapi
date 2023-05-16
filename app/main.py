@@ -1,32 +1,40 @@
+from typing import Annotated
+
 import xlwings as xw
-from fastapi import Body, FastAPI, status
+from fastapi import Depends, FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 
 app = FastAPI()
 
 
-@app.get("/")
-def root():
-    # Health check
-    return {"status": "ok"}
+def get_book(body: dict):
+    """Dependency that returns the calling book and cleans it up again"""
+    book = xw.Book(json=body)
+    try:
+        yield book
+    finally:
+        book.close()
+
+
+# This is the type annotation that we're using in the endpoints
+Book = Annotated[xw.Book, Depends(get_book)]
 
 
 @app.post("/hello")
-async def hello(data: dict = Body):
-    # Instantiate a Book object with the deserialized request body
-    with xw.Book(json=data) as book:
+async def hello(book: Book):
+    """If you're using FastAPI < 0.95.0, you have to replace the function signature
+    like so: `async def hello(book: xw.Book = Depends(get_book))`
+    """
+    sheet = book.sheets[0]
+    cell = sheet["A1"]
+    if cell.value == "Hello xlwings!":
+        cell.value = "Bye xlwings!"
+    else:
+        cell.value = "Hello xlwings!"
 
-        # Use xlwings as usual
-        sheet = book.sheets[0]
-        cell = sheet["A1"]
-        if cell.value == "Hello xlwings!":
-            cell.value = "Bye xlwings!"
-        else:
-            cell.value = "Hello xlwings!"
-
-        # Pass the following back as the response
-        return book.json()
+    # Return the following response
+    return book.json()
 
 
 @app.exception_handler(Exception)
