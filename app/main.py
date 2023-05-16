@@ -13,7 +13,7 @@ def root():
 
 
 @app.post("/hello")
-def hello(data: dict = Body):
+async def hello(data: dict = Body):
     # Instantiate a Book object with the deserialized request body
     with xw.Book(json=data) as book:
 
