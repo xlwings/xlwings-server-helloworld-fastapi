@@ -41,7 +41,7 @@ function runPython(
   url,
   { auth = "", apiKey = "", include = "", exclude = "", headers = {} } = {}
 ) {
-  const version = "0.30.1";
+  const version = "0.30.12";
   const workbook = SpreadsheetApp.getActive();
   const sheets = workbook.getSheets();
 
@@ -123,11 +123,20 @@ function runPython(
   // Names
   let names = [];
   workbook.getNamedRanges().forEach((namedRange, ix) => {
+    let name = namedRange.getName().includes(" ")
+      ? namedRange.getName()
+      : namedRange.getName().replace("'", "").replace("'", "");
     names[ix] = {
-      name: namedRange.getName(),
+      name: name,
       sheet_index: namedRange.getRange().getSheet().getIndex() - 1,
       address: namedRange.getRange().getA1Notation(),
-      // Sheet scope can only happen by copying a sheet from another workbook
+      // Sheet scope can only be created by copying a sheet (?)
+      scope_sheet_name: namedRange.getName().includes("!")
+        ? namedRange.getRange().getSheet().getName()
+        : null,
+      scope_sheet_index: namedRange.getName().includes("!")
+        ? namedRange.getRange().getSheet().getIndex() - 1
+        : null,
       book_scope: !namedRange.getName().includes("!"),
     };
   });
@@ -188,6 +197,7 @@ function runPython(
       name: sheet.getName(),
       values: values,
       pictures: pictures,
+      tables: [],
     });
   });
 
@@ -441,15 +451,46 @@ function alert(workbook, action) {
 }
 
 function setRangeName(workbook, action) {
-  throw "NotImplemented: setRangeName";
+  let range = getRange(workbook, action);
+  range.getSheet().getParent().setNamedRange(action.args[0], range);
 }
 
 function namesAdd(workbook, action) {
-  throw "NotImplemented: namesAdd";
+  let name = action.args[0];
+  if (name.includes("!")) {
+    throw "NotImplemented: sheet scoped names";
+  }
+  let refersTo = action.args[1];
+  const parts = refersTo.split("!");
+  const address = parts[1];
+  let sheetName = parts[0];
+  if (sheetName.charAt(0) === "=") {
+    sheetName = sheetName.substring(1);
+  }
+  if (sheetName.includes(" ")) {
+    sheetName = sheetName.replace("'", "").replace("'", "");
+  }
+  let range = workbook.getSheetByName(sheetName).getRange(address);
+  range.getSheet().getParent().setNamedRange(name, range);
 }
 
 function nameDelete(workbook, action) {
-  throw "NotImplemented: deleteName";
+  // workbook.removeNamedRange(name) doesn't work with sheet scoped names
+  function processName(name) {
+    if (name.includes("!")) {
+      const [sheetName, definedName] = name.split("!");
+      if (!sheetName.startsWith("'")) {
+        return `'${sheetName}'!${definedName}`;
+      }
+    }
+    return name;
+  }
+  workbook.getNamedRanges().forEach((namedRange) => {
+    if (namedRange.getName() === processName(action.args[0])) {
+      namedRange.remove();
+      return;
+    }
+  });
 }
 
 function runMacro(workbook, action) {
@@ -462,4 +503,47 @@ function rangeDelete(workbook, action) {
   } else {
     getRange(workbook, action).deleteCells(SpreadsheetApp.Dimension.COLUMNS);
   }
+}
+
+function rangeInsert(workbook, action) {
+  if (action.args[0] === "down") {
+    getRange(workbook, action).insertCells(SpreadsheetApp.Dimension.ROWS);
+  } else {
+    getRange(workbook, action).insertCells(SpreadsheetApp.Dimension.COLUMNS);
+  }
+}
+
+function addTable(workbook, action) {
+  throw "NotImplemented: addTable";
+}
+
+function setTableName(workbook, action) {
+  throw "NotImplemented: setTableName";
+}
+
+function resizeTable(workbook, action) {
+  throw "NotImplemented: resizeTable";
+}
+
+function showAutofilterTable(workbook, action) {
+  throw "NotImplemented: showAutofilterTable";
+}
+
+function showHeadersTable(workbook, action) {
+  throw "NotImplemented: showHeadersTable";
+}
+
+function showTotalsTable(workbook, action) {
+  throw "NotImplemented: showTotalsTable";
+}
+
+function setTableStyle(workbook, action) {
+  throw "NotImplemented: setTableStyle";
+}
+
+function copyRange(workbook, action) {
+  const destination = workbook
+    .getSheets()
+    [parseInt(action.args[0])].getRange(action.args[1].toString());
+  getRange(workbook, action).copyTo(destination);
 }
