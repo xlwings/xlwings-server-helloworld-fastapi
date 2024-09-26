@@ -1,3 +1,6 @@
+> [!caution]
+> Use https://github.com/xlwings/xlwings-server instead
+
 # xlwings Server: Hello World
 
 This sample works with:
